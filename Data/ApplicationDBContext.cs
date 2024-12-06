@@ -7,7 +7,6 @@ namespace MonitoramentoAmbiental.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // DbSets (Tabelas)
         public DbSet<Parque> Parques { get; set; }
         public DbSet<CondicaoClimatica> CondicoesClimaticas { get; set; }
         public DbSet<HistoricoIrrigacao> HistoricoIrrigacoes { get; set; }
