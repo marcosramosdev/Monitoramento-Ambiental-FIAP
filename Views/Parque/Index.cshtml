@@ -1,0 +1,29 @@
+﻿@model IEnumerable<MonitoramentoAmbiental.Models.Parque>
+
+<h2 class="text-center my-4">Lista de Parques</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Localização</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parque in Model)
+        {
+            <tr>
+                <td>@parque.Nome</td>
+                <td>@parque.Localizacao</td>
+                <td>
+                    <a href="/Parque/Details/@parque.Id" class="btn btn-info btn-sm">Detalhes</a>
+                    <a href="/Parque/Edit/@parque.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="/Parque/Delete/@parque.Id" class="btn btn-danger btn-sm">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/Parque/Create" class="btn btn-primary mt-3">Adicionar Parque</a>

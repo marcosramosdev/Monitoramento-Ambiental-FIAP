@@ -1,42 +1,55 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MonitoramentoAmbiental.Data;
-using MonitoramentoAmbiental.Data.Repositories;
 using MonitoramentoAmbiental.Models;
 
 namespace MonitoramentoAmbiental.Services
 {
     public class ParqueService : IParqueService
     {
-        private readonly IParqueRepository _parqueRepository;
+        private readonly ApplicationDbContext _context;
 
-        public ParqueService(IParqueRepository parqueRepository)
+        public ParqueService(ApplicationDbContext context)
         {
-            _parqueRepository = parqueRepository;
+            _context = context;
         }
 
-        public IEnumerable<Parque> GetAllParques()
+        public async Task<IEnumerable<Parque>> GetAllAsync()
         {
-            return _parqueRepository.GetAll();
+            return await _context.Parques.ToListAsync();
         }
 
-        public Parque GetParqueById(int id)
+        public async Task<Parque> GetByIdAsync(int id)
         {
-            return _parqueRepository.GetById(id);
+            return await _context.Parques.FindAsync(id);
         }
 
-        public void CreateParque(Parque parque)
+        public async Task<Parque> CreateAsync(Parque parque)
         {
-            _parqueRepository.Add(parque);
+            _context.Parques.Add(parque);
+            await _context.SaveChangesAsync();
+            return parque;
         }
 
-        public void UpdateParque(Parque parque)
+        public async Task<Parque> UpdateAsync(int id, Parque updatedParque)
         {
-            _parqueRepository.Update(parque);
+            var parque = await _context.Parques.FindAsync(id);
+            if (parque == null) return null;
+
+            parque.Nome = updatedParque.Nome;
+            parque.Localizacao = updatedParque.Localizacao;
+
+            await _context.SaveChangesAsync();
+            return parque;
         }
 
-        public void DeleteParque(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            _parqueRepository.Delete(id);
+            var parque = await _context.Parques.FindAsync(id);
+            if (parque == null) return false;
+
+            _context.Parques.Remove(parque);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

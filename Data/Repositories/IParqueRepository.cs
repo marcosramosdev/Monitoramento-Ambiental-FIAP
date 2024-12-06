@@ -2,12 +2,8 @@
 
 namespace MonitoramentoAmbiental.Data.Repositories
 {
-    public interface IParqueRepository
+    public interface IParqueRepository : IRepository<Parque>
     {
-        Parque GetById(int id);
-        IEnumerable<Parque> GetAll();
-        void Add(Parque parque);
-        void Update(Parque parque);
-        void Delete(int id);
+        Task<IEnumerable<Parque>> GetParquesComConfiguracoesAsync();
     }
 }

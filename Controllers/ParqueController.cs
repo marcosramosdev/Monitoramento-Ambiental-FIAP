@@ -1,110 +1,75 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MonitoramentoAmbiental.Models;
 using MonitoramentoAmbiental.Services;
-using MonitoramentoAmbiental.ViewModel;
 
 namespace MonitoramentoAmbiental.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ParqueController : ControllerBase
+    public class ParqueController : Controller
     {
-        private readonly ParqueService _parqueService;
+        private readonly IParqueService _parqueService;
 
-        public ParqueController(ParqueService parqueService)
+        public ParqueController(IParqueService parqueService)
         {
             _parqueService = parqueService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> Index()
         {
             var parques = await _parqueService.GetAllAsync();
-            var viewModels = parques.Select(p => new ParqueViewModel
-            {
-                Id = p.Id,
-                Nome = p.Nome,
-                Localizacao = p.Localizacao,
-                Area = p.Area,
-                CondicoesClimaticas = p.CondicoesClimaticas,
-                HistoricoIrrigacoes = p.HistoricoIrrigacoes,
-                ConfiguracoesIrrigacao = p.ConfiguracoesIrrigacao,
-                RegrasCondicoesClimaticas = p.RegrasCondicoesClimaticas
-            });
-            return Ok(viewModels);
+            return View(parques);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult Create()
         {
-            var parque = await _parqueService.GetByIdAsync(id);
-            if (parque == null) return NotFound();
-
-            var viewModel = new ParqueViewModel
-            {
-                Id = parque.Id,
-                Nome = parque.Nome,
-                Localizacao = parque.Localizacao,
-                Area = parque.Area,
-                CondicoesClimaticas = parque.CondicoesClimaticas,
-                HistoricoIrrigacoes = parque.HistoricoIrrigacoes,
-                ConfiguracoesIrrigacao = parque.ConfiguracoesIrrigacao,
-                RegrasCondicoesClimaticas = parque.RegrasCondicoesClimaticas
-            };
-
-            return Ok(viewModel);
+            return View();
         }
-
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ParqueViewModel viewModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Parque parque)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var parque = new Parque
+            if (ModelState.IsValid)
             {
-                Nome = viewModel.Nome,
-                Localizacao = viewModel.Localizacao,
-                Ativo = viewModel.Ativo
-            };
-
-            var createdParque = await _parqueService.CreateAsync(parque);
-
-            return CreatedAtAction(nameof(GetById), new { id = createdParque.Id }, new ParqueViewModel
-            {
-                Id = createdParque.Id,
-                Nome = createdParque.Nome,
-                Ativo = true,
-                Localizacao = createdParque.Localizacao,
-            });
+                await _parqueService.CreateAsync(parque);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(parque);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ParqueViewModel viewModel)
+        // GET: Parque/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var parque = await _parqueService.GetByIdAsync(id);
-            if (parque == null) return NotFound();
+            if (parque == null)
+            {
+                return NotFound();
+            }
 
-            parque.Nome = viewModel.Nome;
-            parque.Localizacao = viewModel.Localizacao;
-            parque.Ativo = viewModel.Ativo;
-
-            await _parqueService.UpdateAsync(id,parque);
-
-            return NoContent();
+            return View(parque);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // POST: Parque/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Parque parque)
         {
-            var parque = await _parqueService.GetByIdAsync(id);
-            if (parque == null) return NotFound();
+            if (id != parque.Id)
+            {
+                return BadRequest();
+            }
 
-            await _parqueService.DeleteAsync(id);
+            if (ModelState.IsValid)
+            {
+                var success = await _parqueService.UpdateAsync(id, parque);
+                if (success == null)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(parque);
         }
     }
 }

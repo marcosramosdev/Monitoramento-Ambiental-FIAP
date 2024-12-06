@@ -1,17 +1,15 @@
 ﻿using MonitoramentoAmbiental.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonitoramentoAmbiental.Services
 {
     public interface IParqueService
     {
-        IEnumerable<Parque> GetAllParques();
-
-        Parque GetParqueById(int id);
-
-        void CreateParque(Parque parque);
-
-        void UpdateParque(Parque parque);
-
-        void DeleteParque(int id);
+        Task<IEnumerable<Parque>> GetAllAsync();
+        Task<Parque> GetByIdAsync(int id);
+        Task<Parque> CreateAsync(Parque parque);
+        Task<Parque> UpdateAsync(int id, Parque parque);
+        Task<bool> DeleteAsync(int id);
     }
 }

@@ -20,3 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.btn {
+    margin-right: 5px;
+}
